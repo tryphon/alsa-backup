@@ -33,7 +33,9 @@ module AlsaBackup
     end
 
     def open_writer(&block)
-      Writer.open(directory, file, format(:format => "wav pcm_16"), &block)     
+      writer_options = { :directory => directory, :file => file, :format => format(:format => "wav pcm_16") }
+      writer_options[:on_close] = @on_close if @on_close
+      Writer.open(writer_options, &block)
     end
 
     def open_capture(&block)
@@ -78,6 +80,10 @@ module AlsaBackup
       else
         AlsaBackup::LengthController::Loop.new
       end
+    end
+
+    def on_close(&block)
+      @on_close = block
     end
 
   end

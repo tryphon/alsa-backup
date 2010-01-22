@@ -5,7 +5,60 @@ describe AlsaBackup::Writer do
   before(:each) do
     @file = "test.wav"
     @directory = test_directory
-    @writer = AlsaBackup::Writer.new @directory, @file
+    @writer = AlsaBackup::Writer.new :directory => @directory, :file => @file
+  end
+
+  describe "when created" do
+
+    it "should use the :directory option as directory" do
+      AlsaBackup::Writer.new(:directory => @directory).directory.should == @directory
+    end
+
+    it "should use the :file option as file" do
+      AlsaBackup::Writer.new(:file => @file).file.should == @file
+    end
+
+    it "should use the :format option as format" do
+      format = {:format => "test"}
+      AlsaBackup::Writer.new(:format => format).format.should == format
+    end
+
+    it "should use default_format when no specified" do
+      AlsaBackup::Writer.new.format.should == AlsaBackup::Writer.default_format
+    end
+
+    it "should include the given :on_close proc in on_close_callbacks" do
+      on_close_proc = Proc.new {}
+      AlsaBackup::Writer.new(:on_close => on_close_proc).on_close_callbacks.should include(on_close_proc)
+    end
+    
+  end
+
+  describe "on_close" do
+    
+    it "should include a callback which delete empty file" do
+      AlsaBackup::Writer.should_receive(:delete_empty_file).with(@file)
+      @writer.on_close(@file)
+    end
+
+    it "should invoke all on_close_callbacks" do
+      file_given_to_proc = nil
+
+      @writer.on_close_callbacks << Proc.new do |file| 
+        file_given_to_proc = file
+      end
+      @writer.on_close(@file)
+
+      file_given_to_proc.should == @file
+    end
+
+    it "should ignore exception from callbacks" do
+      @writer.on_close_callbacks << Proc.new do |file| 
+        raise "Error"
+      end
+      lambda { @writer.on_close(@file) }.should_not raise_error
+    end
+
   end
 
   describe "file" do
@@ -52,21 +105,24 @@ describe AlsaBackup::Writer do
 
   describe "close" do
 
+    it "should close file (via close_file method)" do
+      @writer.should_receive(:close_file)
+      @writer.close
+    end
+    
+  end
+
+  describe "close_file" do
+    
     it "should close current sndfile" do
       sndfile = @writer.sndfile
       sndfile.should_receive(:close)
-      @writer.close      
+      @writer.close_file
     end
-    
-    it "should remove closed file if it doesn't contain data" do
-      @writer.sndfile
 
-      File.stub!(:exists?).and_return(true)
-      File.stub!(:size).and_return(44)
-
-      File.should_receive(:delete).with(@writer.target_file)
-
-      @writer.close
+    it "should notify on_close callbacks (via on_close method)" do
+      @writer.should_receive(:on_close).with(@writer.sndfile.path)
+      @writer.close_file
     end
 
   end

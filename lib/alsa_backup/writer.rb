@@ -4,20 +4,29 @@ require 'fileutils'
 module AlsaBackup
   class Writer
 
-    attr_accessor :directory, :file, :format
+    attr_accessor :directory, :file, :format, :on_close_callbacks
 
     def self.default_format
       {:sample_rate => 44100, :channels => 2, :format => "wav pcm_16"}
     end
 
-    def initialize(directory, file, format = Writer.default_format)
-      @directory = directory
-      @file = file
-      @format = format
+    def initialize(options = {})
+      options = { 
+        :format => Writer.default_format 
+      }.update(options)
+
+      @directory = options[:directory]
+      @file = options[:file]
+      @format = options[:format]
+
+      @on_close_callbacks = [ Proc.new do |file| 
+                                Writer.delete_empty_file(file)
+                              end ]
+      @on_close_callbacks << options[:on_close] if options[:on_close]
     end
 
-    def self.open(directory, file, format, &block)
-      writer = Writer.new(directory, file, format)
+    def self.open(options, &block)
+      writer = Writer.new(options)
       begin
         writer.prepare
         yield writer
@@ -34,16 +43,30 @@ module AlsaBackup
 
     def write(*arguments)
       self.sndfile.write *arguments
-      @on_close = nil
     end
 
     def close
+      close_file
+    end
+
+    def close_file
       if @sndfile
-        AlsaBackup.logger.info('close current file')
+        on_close(@sndfile.path)
         @sndfile.close
       end
-      @on_close.call if @on_close
       @sndfile = nil
+    end
+
+    def on_close(file)
+      AlsaBackup.logger.info('close current file')
+      @on_close_callbacks.each do |callback|
+        begin
+          callback.call(file) 
+        rescue Exception => e
+          AlsaBackup.logger.error("error in on_close callback : #{e}")
+          AlsaBackup.logger.debug { e.backtrace.join("\n") }
+        end
+      end
     end
 
     def file
@@ -64,14 +87,12 @@ module AlsaBackup
       raise "no recording file" unless target_file
 
       unless @sndfile and @sndfile.path == target_file
-        @sndfile.close if @sndfile
+        close_file
 
         Writer.rename_existing_file(target_file)
         AlsaBackup.logger.info{"new file #{File.expand_path target_file}"}
 
         FileUtils.mkdir_p File.dirname(target_file)
-
-        @on_close = Proc.new { Writer.delete_empty_file(target_file) }
         @sndfile = Sndfile::File.new(target_file, "w", self.format)
       end
       @sndfile

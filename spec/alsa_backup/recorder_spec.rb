@@ -10,6 +10,7 @@ describe AlsaBackup::Recorder do
   end
 
   it "should not raise an error on start" do
+    @recorder.start(2)
     lambda { @recorder.start(2) }.should_not raise_error
   end
 
@@ -110,6 +111,33 @@ describe AlsaBackup::Recorder do
       @recorder.error_handler.should_not_receive(:call)
 
       start_recorder(2)
+    end
+
+  end
+
+  describe "open_writer" do
+    
+    it "should use the given on_close block" do
+      on_close_block = Proc.new {}
+      @recorder.on_close &on_close_block
+
+      AlsaBackup::Writer.should_receive(:open).with(hash_including(:on_close => on_close_block))
+      @recorder.open_writer {}
+    end
+
+    it "should use the directory" do
+      AlsaBackup::Writer.should_receive(:open).with(hash_including(:directory => @recorder.directory))
+      @recorder.open_writer {}
+    end
+
+    it "should use the file" do
+      AlsaBackup::Writer.should_receive(:open).with(hash_including(:file => @recorder.file))
+      @recorder.open_writer {}
+    end
+
+    it "should use the format wav pcm_16 with wanted sample_rate and channels" do
+      AlsaBackup::Writer.should_receive(:open).with(hash_including(:format => @recorder.format(:format => "wav pcm_16")))
+      @recorder.open_writer {}
     end
 
   end
