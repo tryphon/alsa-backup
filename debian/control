@@ -1,11 +1,11 @@
 Source: alsa-backup
 Section: sound
 Priority: optional
-Maintainer: Alban Peignier <alban.peignier@free.fr>
+Maintainer: Alban Peignier <alban@tryphon.eu>
 Build-Depends: debhelper, cdbs, ruby-pkg-tools, libsetup-ruby1.8
 Build-Depends-Indep: ruby1.8
 Standards-Version: 3.8.1
-Homepage: http://github.com/alban.peignier/alsa-backup
+Homepage: http://projects.tryphon.eu/alsa-backup
 
 Package: alsa-backup
 Architecture: all

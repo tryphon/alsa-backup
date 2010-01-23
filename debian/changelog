@@ -1,3 +1,9 @@
+alsa-backup (0.0.8-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Alban Peignier <alban@tryphon.eu>  Fri, 22 Jan 2010 21:57:08 +0100
+
 alsa-backup (0.0.7-2) unstable; urgency=low
 
   * Add init.d and default configuration files

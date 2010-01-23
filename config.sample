@@ -79,6 +79,13 @@ AlsaBackup.config do |recorder|
   #recorder.error_handler = Proc.new do |exception| 
   #  true
   #end
+
+  # To process created files
+  # WARN: don't forget the & in the command line or fork
+  #recorder.on_close do |file|
+  #  AlsaBackup.logger.info "encode in ogg : #{file}"
+  #  system "oggenc -Q -q7 #{file} &"
+  #end
 end
 
 

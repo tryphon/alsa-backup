@@ -4,7 +4,7 @@ require File.dirname(__FILE__) + '/lib/alsa_backup'
 
 # Generate all the Rake tasks
 # Run 'rake -T' to see list of generated tasks (from gem root directory)
-Hoe.spec('alsa-backup') do |p|
+$hoe = Hoe.spec('alsa-backup') do |p|
   p.version = AlsaBackup::VERSION
   p.readme_file   = 'README.rdoc'
   p.developer('Alban Peignier', 'alban@tryphon.eu')
@@ -16,11 +16,24 @@ Hoe.spec('alsa-backup') do |p|
   p.extra_dev_deps = [
     ['newgem', ">= #{::Newgem::VERSION}"]
   ]
+  p.url = 'http://projects.tryphon.eu/alsa-backup'
   
   p.clean_globs |= %w[**/.DS_Store tmp *.log]
   path = (p.rubyforge_name == p.name) ? p.rubyforge_name : "\#{p.rubyforge_name}/\#{p.name}"
   p.remote_rdoc_dir = File.join(path.gsub(/^#{p.rubyforge_name}\/?/,''), 'rdoc')
   p.rsync_args = '-av --delete --ignore-errors'
+end
+
+desc 'Recreate Manifest.txt to include ALL files'
+task :manifest do
+  `rake check_manifest | patch -p0 > Manifest.txt`
+end
+
+desc "Generate a #{$hoe.name}.gemspec file"
+task :gemspec do
+  File.open("#{$hoe.name}.gemspec", "w") do |file|
+    file.puts $hoe.spec.to_ruby
+  end
 end
 
 require 'newgem/tasks' # load /tasks/*.rake
@@ -42,8 +55,8 @@ require 'debian/build/config'
 
 namespace "package" do
   Package.new(:"alsa-backup") do |t|
-    t.version = '0.0.7'
-    t.debian_increment = 2
+    t.version = '0.0.8'
+    t.debian_increment = 1
 
     t.source_provider = GitExportProvider.new
   end
