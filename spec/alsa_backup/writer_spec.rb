@@ -8,7 +8,7 @@ describe AlsaBackup::Writer do
     @writer = AlsaBackup::Writer.new :directory => @directory, :file => @file
   end
 
-  describe "when created" do
+  context "when created" do
 
     it "should use the :directory option as directory" do
       AlsaBackup::Writer.new(:directory => @directory).directory.should == @directory
@@ -34,30 +34,100 @@ describe AlsaBackup::Writer do
     
   end
 
-  describe "on_close" do
+  describe "#on_close" do
+
+    class TestCallback
+
+      attr_reader :file
+
+      def call(file)
+        @file = file
+      end
+
+      def invoked?
+        not @file.nil?
+      end
+
+    end
+
+    let(:callback) { TestCallback.new }
+
+    before(:each) do
+      @writer.on_close_callbacks << callback
+    end
     
-    it "should include a callback which delete empty file" do
-      AlsaBackup::Writer.should_receive(:delete_empty_file).with(@file)
+    it "should check if file is empty" do
+      AlsaBackup::Writer.should_receive(:delete_empty_file).with(@file).and_return(true)
       @writer.on_close(@file)
+    end
+
+    context "when file was empty" do
+
+      before(:each) do
+        AlsaBackup::Writer.stub :delete_empty_file => true
+      end
+
+      it "should not invoke callbacks" do
+        @writer.on_close(@file)
+        callback.should_not be_invoked
+      end
+
     end
 
     it "should invoke all on_close_callbacks" do
-      file_given_to_proc = nil
-
-      @writer.on_close_callbacks << Proc.new do |file| 
-        file_given_to_proc = file
-      end
       @writer.on_close(@file)
-
-      file_given_to_proc.should == @file
+      callback.should be_invoked
     end
 
     it "should ignore exception from callbacks" do
-      @writer.on_close_callbacks << Proc.new do |file| 
-        raise "Error"
-      end
+      callback.stub!(:call).and_raise("Error")
       lambda { @writer.on_close(@file) }.should_not raise_error
     end
+
+  end
+
+  describe ".delete_empty_file" do
+
+    let(:file) { "tmp/deleted_empty_file" }
+
+    after(:each) do
+      File.delete(file) if File.exists?(file)      
+    end
+
+    context "when file contains 44 bytes or less" do
+
+      before(:each) do
+        File.open(file, "w") { |f| f.write 'a'*44 }
+      end
+
+      it "should remove a file" do
+        AlsaBackup::Writer.delete_empty_file(file)
+        File.exists?(file).should be_false
+      end
+
+      it "should return true" do
+        AlsaBackup::Writer.delete_empty_file(file).should be_true
+      end
+
+    end
+
+    context "when file contains more than 44 bytes" do
+
+      before(:each) do
+        File.open(file, "w") { |f| f.write "a"*45 }
+      end
+
+      it "should not remove the file" do
+        AlsaBackup::Writer.delete_empty_file(file)
+        File.exists?(file).should be_true
+      end
+
+      it "should return false" do
+        AlsaBackup::Writer.delete_empty_file(file).should be_false
+      end
+                                                      
+    end
+
 
   end
 

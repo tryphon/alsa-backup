@@ -19,9 +19,7 @@ module AlsaBackup
       @file = options[:file]
       @format = options[:format]
 
-      @on_close_callbacks = [ Proc.new do |file| 
-                                Writer.delete_empty_file(file)
-                              end ]
+      @on_close_callbacks = []
       @on_close_callbacks << options[:on_close] if options[:on_close]
     end
 
@@ -59,6 +57,9 @@ module AlsaBackup
 
     def on_close(file)
       AlsaBackup.logger.info('close current file')
+      return if Writer.delete_empty_file(file)
+
+      AlsaBackup.logger.debug("invoke #{@on_close_callbacks.size} callback(s)")
       @on_close_callbacks.each do |callback|
         begin
           callback.call(file) 

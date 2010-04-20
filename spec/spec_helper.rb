@@ -1,3 +1,5 @@
+require 'rubygems' unless ENV['NO_RUBYGEMS']
+
 begin
   require 'spec'
 rescue LoadError
