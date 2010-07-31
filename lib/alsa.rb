@@ -290,7 +290,7 @@ module ALSA
       attach_function :hw_params_get_rate, :snd_pcm_hw_params_get_rate, [ :pointer, :pointer, :pointer ], :int
       attach_function :hw_params_set_rate_near, :snd_pcm_hw_params_set_rate_near, [ :pointer, :pointer, :pointer, :pointer ], :int
       attach_function :hw_params_set_channels, :snd_pcm_hw_params_set_channels, [ :pointer, :pointer, :uint ], :int
-      attach_function :hw_params_get_channels, :snd_pcm_hw_params_get_format, [ :pointer, :pointer ], :int
+      attach_function :hw_params_get_channels, :snd_pcm_hw_params_get_channels, [ :pointer, :pointer ], :int
       attach_function :hw_params_set_periods, :snd_pcm_hw_params_set_periods, [ :pointer, :pointer, :uint, :int ], :int
 
       attach_function :format_size, :snd_pcm_format_size, [ :int, :uint ], :int
