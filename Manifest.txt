@@ -1,4 +1,6 @@
 .autotest
+COPYING
+COPYRIGHT
 History.txt
 Manifest.txt
 PostInstall.txt
@@ -8,7 +10,6 @@ TODO
 alsa-backup.gemspec
 bin/alsa-backup
 config.sample
-lib/alsa.rb
 lib/alsa_backup.rb
 lib/alsa_backup/cli.rb
 lib/alsa_backup/core_ext.rb
@@ -16,15 +17,16 @@ lib/alsa_backup/length_controller.rb
 lib/alsa_backup/recorder.rb
 lib/alsa_backup/writer.rb
 lib/sndfile.rb
+lib/syslog_logger.rb
 script/console
 script/destroy
 script/generate
-spec/alsa/pcm_spec.rb
+setup.rb
 spec/alsa_backup/cli_spec.rb
 spec/alsa_backup/core_ext_spec.rb
+spec/alsa_backup/length_recorder_spec.rb
 spec/alsa_backup/recorder_spec.rb
 spec/alsa_backup/writer_spec.rb
-spec/alsa_backup_spec.rb
 spec/fixtures/config_test.rb
 spec/sndfile/info_spec.rb
 spec/spec.opts

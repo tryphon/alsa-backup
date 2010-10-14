@@ -55,7 +55,7 @@ require 'debian/build/config'
 
 namespace "package" do
   Package.new(:"alsa-backup") do |t|
-    t.version = '0.0.8'
+    t.version = '0.10'
     t.debian_increment = 1
 
     t.source_provider = GitExportProvider.new
