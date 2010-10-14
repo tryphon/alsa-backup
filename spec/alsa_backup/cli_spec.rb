@@ -16,7 +16,7 @@ describe AlsaBackup::CLI, "execute" do
     options = { :file => @file, :length => 2 }.update(options)
     arguments = options.collect do |key,value| 
       if value
-        returning "--#{key}" do |argument|
+        "--#{key}".tap do |argument|
           argument << "=#{value}" unless value == true
         end
       end
