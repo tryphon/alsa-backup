@@ -5,6 +5,20 @@ class Time
     self.change(attribute => actual - actual%modulo)
   end
 
+  # FIXME cloned by waiting correct require 'active_support/..' for active_support > 3
+  def change(options)
+    ::Time.send(
+                self.utc? ? :utc : :local, 
+                options[:year]  || self.year, 
+                options[:month] || self.month, 
+                options[:mday]  || self.mday, 
+                options[:hour]  || self.hour, 
+                options[:min]   || (options[:hour] ? 0 : self.min),
+                options[:sec]   || ((options[:hour] || options[:min]) ? 0 : self.sec),
+                options[:usec]  || ((options[:hour] || options[:min] || options[:sec]) ? 0 : self.usec)
+                )
+  end
+  
 end
 
 class File
