@@ -47,6 +47,20 @@ describe AlsaBackup::Recorder do
     @recorder.start
   end
 
+  describe "alsa_options" do
+    
+    it "should use buffer_time if specified" do
+      @recorder.buffer_time = 100000
+      @recorder.alsa_options[:buffer_time].should == 100000
+    end
+
+    it "should use period_time if specified" do
+      @recorder.period_time = 100000
+      @recorder.alsa_options[:period_time].should == 100000
+    end
+
+  end
+
   describe "error handler" do
 
     class TestErrorHandler
@@ -138,6 +152,22 @@ describe AlsaBackup::Recorder do
     it "should use the format wav pcm_16 with wanted sample_rate and channels" do
       AlsaBackup::Writer.should_receive(:open).with(hash_including(:format => @recorder.format(:format => "wav pcm_16")))
       @recorder.open_writer {}
+    end
+
+  end
+
+  describe "open_capture" do
+
+    it "should use specified device" do
+      @recorder.stub :device => "dummy"
+      ALSA::PCM::Capture.should_receive(:open).with("dummy", anything())
+      @recorder.open_capture {}
+    end
+    
+    it "should use alsa_options" do
+      @recorder.stub :alsa_options => { :dummy => true }
+      ALSA::PCM::Capture.should_receive(:open).with(anything(), @recorder.alsa_options)
+      @recorder.open_capture {}
     end
 
   end

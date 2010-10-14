@@ -15,7 +15,7 @@ module AlsaBackup
     end
 
     attr_accessor :file, :directory, :error_handler
-    attr_accessor :device, :sample_rate, :channels
+    attr_accessor :device, :sample_rate, :channels, :buffer_time, :period_time
 
     def start(seconds_to_record = nil)
       length_controller = self.length_controller(seconds_to_record)
@@ -39,7 +39,14 @@ module AlsaBackup
     end
 
     def open_capture(&block)
-      ALSA::PCM::Capture.open(device, format(:sample_format => :s16_le), &block)      
+      ALSA::PCM::Capture.open(device, alsa_options, &block)      
+    end
+
+    def alsa_options
+      format(:sample_format => :s16_le).tap do |alsa_options|
+        alsa_options[:buffer_time] = buffer_time if buffer_time
+        alsa_options[:period_time] = period_time if period_time
+      end
     end
 
     def handle_error(e, try_to_continue = true)
