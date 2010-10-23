@@ -49,6 +49,7 @@ module AlsaBackup
 
     def close_file
       if @sndfile
+        @first_file_closed = true
         on_close(@sndfile.path)
         @sndfile.close
       end
@@ -70,10 +71,14 @@ module AlsaBackup
       end
     end
 
+    def first_file?
+      not @first_file_closed
+    end
+
     def file
       case @file
       when Proc
-        @file.call
+        @file.call first_file?
       else
         @file
       end
@@ -89,6 +94,8 @@ module AlsaBackup
 
       unless @sndfile and @sndfile.path == target_file
         close_file
+        # target_file can change when first_file_closed changes
+        target_file = self.target_file
 
         Writer.rename_existing_file(target_file)
         AlsaBackup.logger.info{"new file #{File.expand_path target_file}"}

@@ -143,6 +143,31 @@ describe AlsaBackup::Writer do
       subject.file.should == file_name
     end
     
+    context "when the file is a Proc" do
+
+      it "should pass true as argument when the Writer retrieves a first filename, false otherwise" do
+        subject.file = Proc.new { |first| "dummy-#{first}" }
+        subject.file.should eq("dummy-true")
+        subject.stub :first_file? => false
+        subject.file.should eq("dummy-false")
+      end
+
+    end
+
+  end
+
+  describe "first_file? " do
+    
+    it "should be true before the first close_file" do
+      subject.should be_first_file
+    end
+
+    it "should be false after close_file" do
+      subject.sndfile
+      subject.close_file
+      subject.should_not be_first_file
+    end
+
   end
 
   describe "rename_existing_file" do
