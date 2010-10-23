@@ -2,9 +2,9 @@ require File.dirname(__FILE__) + '/../spec_helper.rb'
 
 describe AlsaBackup::LengthController do
 
-  def continue_after(frame_count)
-    simple_matcher("continue after #{frame_count} frames") do |actual|
-      actual.continue_after?(frame_count)
+  RSpec::Matchers.define :continue_after do |frame_count|
+    match do |controller|
+      controller.continue_after?(frame_count)
     end
   end
   

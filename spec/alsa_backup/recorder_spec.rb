@@ -4,59 +4,57 @@ require 'alsa_backup/recorder'
 
 describe AlsaBackup::Recorder do
 
-  before(:each) do
-    @file = test_file
-    @recorder = AlsaBackup::Recorder.new(@file)
-  end
+  let(:file) { test_file }
+  subject { AlsaBackup::Recorder.new(file) }
 
   it "should not raise an error on start" do
-    @recorder.start(2)
-    lambda { @recorder.start(2) }.should_not raise_error
+    subject.start(2)
+    lambda { subject.start(2) }.should_not raise_error
   end
 
   it "should use the specified alsa device" do
-    @recorder.device = alsa_device = "dummy"
+    subject.device = alsa_device = "dummy"
     ALSA::PCM::Capture.should_receive(:open).with(alsa_device, anything)
-    @recorder.open_capture
+    subject.open_capture
   end
 
   it "should use the specified sample rate" do
-    @recorder.sample_rate = 48000
-    @recorder.format[:sample_rate].should == @recorder.sample_rate
+    subject.sample_rate = 48000
+    subject.format[:sample_rate].should == subject.sample_rate
   end
 
   it "should use the specified channels" do
-    @recorder.channels = 4
-    @recorder.format[:channels].should == @recorder.channels
+    subject.channels = 4
+    subject.format[:channels].should == subject.channels
   end
 
   it "should use 44100 as default sample rate" do
-    @recorder.sample_rate.should == 44100
+    subject.sample_rate.should == 44100
   end
 
   it "should use 2 as default channels" do
-    @recorder.channels.should == 2
+    subject.channels.should == 2
   end
 
   it "should use hw:0 as default device" do
-    @recorder.device.should == "hw:0"
+    subject.device.should == "hw:0"
   end
 
   it "should stop the recording on Interrupt error" do
-    @recorder.stub!(:open_writer).and_raise(Interrupt)
-    @recorder.start
+    subject.stub!(:open_writer).and_raise(Interrupt)
+    subject.start
   end
 
   describe "alsa_options" do
     
     it "should use buffer_time if specified" do
-      @recorder.buffer_time = 100000
-      @recorder.alsa_options[:buffer_time].should == 100000
+      subject.buffer_time = 100000
+      subject.alsa_options[:buffer_time].should == 100000
     end
 
     it "should use period_time if specified" do
-      @recorder.period_time = 100000
-      @recorder.alsa_options[:period_time].should == 100000
+      subject.period_time = 100000
+      subject.alsa_options[:period_time].should == 100000
     end
 
   end
@@ -82,47 +80,47 @@ describe AlsaBackup::Recorder do
     
     before(:each) do
       AlsaBackup::Writer.stub!(:open).and_raise("dummy")
-      @recorder.stub!(:sleep)
+      subject.stub!(:sleep)
     end
 
     it "should raise error when error handler is nil" do
-      @recorder.error_handler = nil
-      lambda { @recorder.start }.should raise_error
+      subject.error_handler = nil
+      lambda { subject.start }.should raise_error
     end
 
     it "should raise error when error handler returns nil or false" do
-      @recorder.error_handler = TestErrorHandler.new(nil)
-      lambda { @recorder.start }.should raise_error
+      subject.error_handler = TestErrorHandler.new(nil)
+      lambda { subject.start }.should raise_error
     end
 
     def start_recorder(limit = nil)
-      @recorder.start(limit)
+      subject.start(limit)
     rescue RuntimeError
 
     end
 
     it "should retry when error handler returns something (not false or nil)" do
-      @recorder.error_handler = TestErrorHandler.new(true)
+      subject.error_handler = TestErrorHandler.new(true)
       AlsaBackup::Writer.should_receive(:open).twice().and_raise("dummy")
 
       start_recorder
     end
 
     it "should use the error handler response as sleep time if numerical" do
-      @recorder.error_handler = TestErrorHandler.new(error_handler_response = 5)
-      @recorder.should_receive(:sleep).with(error_handler_response)
+      subject.error_handler = TestErrorHandler.new(error_handler_response = 5)
+      subject.should_receive(:sleep).with(error_handler_response)
       start_recorder
     end
 
     it "should sleep 5 seconds when the error handler response is a number" do
-      @recorder.error_handler = TestErrorHandler.new(true)
-      @recorder.should_receive(:sleep).with(5)
+      subject.error_handler = TestErrorHandler.new(true)
+      subject.should_receive(:sleep).with(5)
       start_recorder
     end
 
     it "should not use error handler when recorder is started with a time length" do
-      @recorder.error_handler = mock("error_handler")
-      @recorder.error_handler.should_not_receive(:call)
+      subject.error_handler = mock("error_handler")
+      subject.error_handler.should_not_receive(:call)
 
       start_recorder(2)
     end
@@ -133,25 +131,25 @@ describe AlsaBackup::Recorder do
     
     it "should use the given on_close block" do
       on_close_block = Proc.new {}
-      @recorder.on_close &on_close_block
+      subject.on_close &on_close_block
 
       AlsaBackup::Writer.should_receive(:open).with(hash_including(:on_close => on_close_block))
-      @recorder.open_writer {}
+      subject.open_writer {}
     end
 
     it "should use the directory" do
-      AlsaBackup::Writer.should_receive(:open).with(hash_including(:directory => @recorder.directory))
-      @recorder.open_writer {}
+      AlsaBackup::Writer.should_receive(:open).with(hash_including(:directory => subject.directory))
+      subject.open_writer {}
     end
 
     it "should use the file" do
-      AlsaBackup::Writer.should_receive(:open).with(hash_including(:file => @recorder.file))
-      @recorder.open_writer {}
+      AlsaBackup::Writer.should_receive(:open).with(hash_including(:file => subject.file))
+      subject.open_writer {}
     end
 
     it "should use the format wav pcm_16 with wanted sample_rate and channels" do
-      AlsaBackup::Writer.should_receive(:open).with(hash_including(:format => @recorder.format(:format => "wav pcm_16")))
-      @recorder.open_writer {}
+      AlsaBackup::Writer.should_receive(:open).with(hash_including(:format => subject.format(:format => "wav pcm_16")))
+      subject.open_writer {}
     end
 
   end
@@ -159,15 +157,15 @@ describe AlsaBackup::Recorder do
   describe "open_capture" do
 
     it "should use specified device" do
-      @recorder.stub :device => "dummy"
+      subject.stub :device => "dummy"
       ALSA::PCM::Capture.should_receive(:open).with("dummy", anything())
-      @recorder.open_capture {}
+      subject.open_capture {}
     end
     
     it "should use alsa_options" do
-      @recorder.stub :alsa_options => { :dummy => true }
-      ALSA::PCM::Capture.should_receive(:open).with(anything(), @recorder.alsa_options)
-      @recorder.open_capture {}
+      subject.stub :alsa_options => { :dummy => true }
+      ALSA::PCM::Capture.should_receive(:open).with(anything(), subject.alsa_options)
+      subject.open_capture {}
     end
 
   end

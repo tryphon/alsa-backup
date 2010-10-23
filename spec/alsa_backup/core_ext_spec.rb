@@ -17,9 +17,9 @@ describe File do
 
   describe "suffix_basename" do
 
-    def take_this_form(expected_file)
-      simple_matcher("have this #{expected_file}") do |actual|
-        File.suffix_basename(actual,'<prefix>') == expected_file
+    RSpec::Matchers.define :take_this_form do |expected_file|
+      match do |filename|
+        File.suffix_basename(filename,'<prefix>') == expected_file
       end
     end
 

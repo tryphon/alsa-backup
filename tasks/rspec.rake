@@ -1,11 +1,11 @@
 begin
-  require 'spec'
+  require 'rspec'
 rescue LoadError
   require 'rubygems' unless ENV['NO_RUBYGEMS']
-  require 'spec'
+  require 'rspec'
 end
 begin
-  require 'spec/rake/spectask'
+  require 'rspec/core/rake_task'
 rescue LoadError
   puts <<-EOS
 To use rspec for testing you must install rspec gem:
@@ -14,16 +14,8 @@ EOS
   exit(0)
 end
 
-namespace :spec do
-  desc "Generate spec HTML report"
-  Spec::Rake::SpecTask.new('html') do |t|
-    t.spec_opts = ["--format", "html:spec.html", "--diff"]
-    t.fail_on_error = false
-  end
-
-  desc "Generate rcov report"
-  Spec::Rake::SpecTask.new('rcov') do |t|
-    t.rcov = true
-    t.rcov_opts = %w{--exclude / --include-file ^lib}
-  end
+desc "Run the specs under spec/models"
+RSpec::Core::RakeTask.new do |t|
+  t.rspec_opts = ["-c", "-f progress", "-r ./spec/spec_helper.rb"]
+  t.pattern = 'spec/**/*_spec.rb'
 end
