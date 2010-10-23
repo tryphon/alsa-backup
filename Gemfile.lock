@@ -1,0 +1,58 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    RedCloth (4.2.3)
+    SyslogLogger (1.4.0)
+      hoe (>= 1.2.0)
+    activesupport (2.3.10)
+    autotest (4.4.1)
+    daemons (1.1.0)
+    diff-lcs (1.1.2)
+    ffi (0.6.3)
+      rake (>= 0.8.7)
+    hoe (2.6.2)
+      rake (>= 0.8.7)
+      rubyforge (>= 2.0.4)
+    json_pure (1.4.6)
+    newgem (1.5.3)
+      RedCloth (>= 4.1.1)
+      activesupport (~> 2.3.4)
+      hoe (>= 2.4.0)
+      rubigen (>= 1.5.3)
+      syntax (>= 1.0.0)
+    rake (0.8.7)
+    rake-debian-build (1.0.12)
+    rcov (0.9.9)
+    rspec (2.0.1)
+      rspec-core (~> 2.0.1)
+      rspec-expectations (~> 2.0.1)
+      rspec-mocks (~> 2.0.1)
+    rspec-core (2.0.1)
+    rspec-expectations (2.0.1)
+      diff-lcs (>= 1.1.2)
+    rspec-mocks (2.0.1)
+      rspec-core (~> 2.0.1)
+      rspec-expectations (~> 2.0.1)
+    rubigen (1.5.5)
+      activesupport (~> 2.3.5)
+    ruby-alsa (0.7)
+      ffi (>= 0.6.3)
+    rubyforge (2.0.4)
+      json_pure (>= 1.1.7)
+    syntax (1.0.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  SyslogLogger
+  activesupport (< 3.0)
+  autotest
+  daemons
+  ffi
+  newgem
+  rake
+  rake-debian-build
+  rcov
+  rspec
+  ruby-alsa
