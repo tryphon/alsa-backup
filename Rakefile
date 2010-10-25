@@ -43,23 +43,7 @@ task :default => :spec
 
 namespace :gems do
   task :install do
-    gems = %w{active_support ffi rspec daemons}
-    sh "sudo gem install #{gems.join(' ')}"
+    puts "DEPRECATED Use bundle install"
   end
 end
 
-require 'debian/build'
-
-include Debian::Build
-require 'debian/build/config'
-
-namespace "package" do
-  Package.new(:"alsa-backup") do |t|
-    t.version = '0.10'
-    t.debian_increment = 1
-
-    t.source_provider = GitExportProvider.new
-  end
-end
-
-require 'debian/build/tasks'
