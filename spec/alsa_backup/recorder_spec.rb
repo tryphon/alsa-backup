@@ -7,7 +7,7 @@ describe AlsaBackup::Recorder do
   let(:file) { test_file }
   subject { AlsaBackup::Recorder.new(file) }
 
-  def alsa_device_available?
+  def self.alsa_device_available?
     File.exists? "/proc/asound/card0/id"
   end
 
