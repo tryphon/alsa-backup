@@ -7,9 +7,15 @@ describe AlsaBackup::Recorder do
   let(:file) { test_file }
   subject { AlsaBackup::Recorder.new(file) }
 
-  it "should not raise an error on start" do
-    subject.start(2)
-    lambda { subject.start(2) }.should_not raise_error
+  def alsa_device_available?
+    File.exists? "/proc/asound/card0/id"
+  end
+
+  if alsa_device_available?
+    it "should not raise an error on start" do
+      subject.start(2)
+      lambda { subject.start(2) }.should_not raise_error
+    end
   end
 
   it "should use the specified alsa device" do
