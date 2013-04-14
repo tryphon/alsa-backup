@@ -4,7 +4,7 @@ GEM
     RedCloth (4.2.3)
     SyslogLogger (1.4.0)
       hoe (>= 1.2.0)
-    activesupport (2.3.10)
+    activesupport (2.3.5)
     autotest (4.4.1)
     daemons (1.1.0)
     diff-lcs (1.1.2)
@@ -21,7 +21,6 @@ GEM
       rubigen (>= 1.5.3)
       syntax (>= 1.0.0)
     rake (0.8.7)
-    rake-debian-build (1.0.12)
     rcov (0.9.9)
     rspec (2.0.1)
       rspec-core (~> 2.0.1)
@@ -46,13 +45,12 @@ PLATFORMS
 
 DEPENDENCIES
   SyslogLogger
-  activesupport (< 3.0)
+  activesupport (= 2.3.5)
   autotest
   daemons
   ffi
   newgem
   rake
-  rake-debian-build
   rcov
   rspec
   ruby-alsa

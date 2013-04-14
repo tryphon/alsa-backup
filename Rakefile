@@ -1,3 +1,5 @@
+require 'thread'
+
 require 'rubygems' unless ENV['NO_RUBYGEMS']
 %w[rake rake/clean fileutils newgem hoe rubigen].each { |f| require f }
 require File.dirname(__FILE__) + '/lib/alsa_backup'

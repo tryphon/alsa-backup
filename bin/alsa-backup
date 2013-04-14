@@ -3,6 +3,8 @@
 #  Created on 2009-5-14.
 #  Copyright (c) 2009. All rights reserved.
 
+require 'thread'
+
 require 'alsa_backup'
 require 'alsa_backup/cli'
 
