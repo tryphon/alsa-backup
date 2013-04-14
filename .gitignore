@@ -6,3 +6,4 @@ config
 doc
 coverage
 config.rb
+build/*

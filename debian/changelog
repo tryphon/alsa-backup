@@ -1,3 +1,9 @@
+alsa-backup (0.12-1) unstable; urgency=low
+
+  * New upstream release (closes #...)
+
+ -- Alban Peignier <alban@tryphon.eu>  Sun, 14 Apr 2013 19:36:52 +0200
+
 alsa-backup (0.11-1) unstable; urgency=low
 
   * New upstream release (closes #3)
