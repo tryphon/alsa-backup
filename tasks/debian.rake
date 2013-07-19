@@ -1,6 +1,7 @@
 namespace :package do
   desc "Build debian source packages"
   task :source do
+    mkdir_p "build"
     DebianPackage.new.tap do |package|
       package.build_source
     end
@@ -36,12 +37,12 @@ namespace :package do
 
       FileUtils.mkdir_p source_directory
       export_source source_directory
-      
-      Dir.chdir(source_directory) do 
+
+      Dir.chdir(source_directory) do
         sh "dpkg-buildpackage -S"
       end
     end
-      
+
     def changes_file
       @changes_file ||= "build/#{attributes['Source']}_#{attributes['Version']}_source.changes"
     end
