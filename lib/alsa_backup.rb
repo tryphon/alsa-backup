@@ -32,7 +32,5 @@ end
 require 'alsa_backup/core_ext'
 require 'alsa_backup/length_controller'
 require 'alsa_backup/writer'
+require 'alsa_backup/asynchronous_writer'
 require 'alsa_backup/recorder'
-
-
-

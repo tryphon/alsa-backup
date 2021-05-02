@@ -35,11 +35,11 @@ module AlsaBackup
     def open_writer(&block)
       writer_options = { :directory => directory, :file => file, :format => format(:format => "wav pcm_16") }
       writer_options[:on_close] = @on_close if @on_close
-      Writer.open(writer_options, &block)
+      AsynchronousWriter.open(writer_options, &block)
     end
 
     def open_capture(&block)
-      ALSA::PCM::Capture.open(device, alsa_options, &block)      
+      ALSA::PCM::Capture.open(device, alsa_options, &block)
     end
 
     def alsa_options
@@ -51,8 +51,8 @@ module AlsaBackup
 
     def handle_error(e, try_to_continue = true)
       if Interrupt === e or SignalException === e
-        AlsaBackup.logger.debug('recorder interrupted')      
-        return false 
+        AlsaBackup.logger.debug('recorder interrupted')
+        return false
       end
 
       AlsaBackup.logger.error(e)
@@ -83,7 +83,7 @@ module AlsaBackup
 
     def length_controller(seconds_to_record)
       if seconds_to_record
-        AlsaBackup::LengthController::FrameCount.new format[:sample_rate] * seconds_to_record 
+        AlsaBackup::LengthController::FrameCount.new format[:sample_rate] * seconds_to_record
       else
         AlsaBackup::LengthController::Loop.new
       end
